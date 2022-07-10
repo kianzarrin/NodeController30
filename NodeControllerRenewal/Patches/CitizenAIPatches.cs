@@ -16,17 +16,16 @@ namespace NodeController.Patches
         {
             foreach(var instruction in instructions)
             {
+                yield return instruction;
                 if (instruction.opcode == OpCodes.Ldc_R4 && instruction.operand is float value && value == 64)
                 {
                     yield return new CodeInstruction(OpCodes.Ldloc, 4);
                     yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(CitizenAIPatches), nameof(CitizenAIPatches.GetGap)));
                 }
-                else
-                    yield return instruction;
             }
         }
 
-        private static float GetGap(PathUnit.Position pathPos)
+        private static float GetGap(float gap /*consume stack*/, PathUnit.Position pathPos)
         {
             ref var segment = ref pathPos.m_segment.GetSegment();
             var nodeId = pathPos.m_offset == 0 ? segment.m_startNode : segment.m_endNode;
